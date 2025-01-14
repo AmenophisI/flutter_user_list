@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'detail.dart';
+import 'package:http/http.dart' as http;
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -9,37 +12,28 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  List<String> todos = [
-    'task1task1task1task1task1task1task1task1task1',
-    'タスク2',
-    'タスク3',
-    'タスク3',
-    'タスク3',
-    'タスク3',
-    'タスク3',
-    'タスク3',
-    'タスク3',
-    'タスク3',
-    'タスク3',
-    'タスク3',
-    'タスク3',
-    'タスク3',
-    'タスク3',
-    'タスク3',
-  ];
-  List<String> filteredToDos = [];
+  List<dynamic> users = [];
+  List<dynamic> filteredUsers = [];
 
-  String listedTodo = '';
+  String listedUser = '';
+
+  Future<void> _fetchUsers() async {
+    final res = await http.get(Uri.parse("https://api.github.com/users"));
+    final List<dynamic> data = jsonDecode(res.body);
+    setState(() {
+      users = data;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-    filteredToDos = todos;
+    _fetchUsers();
   }
 
   void filterToDos(String condition) {
     setState(() {
-      filteredToDos = todos.where((todo) => todo.contains(condition)).toList();
+      filteredUsers = users.where((todo) => todo.contains(condition)).toList();
     });
   }
 
@@ -62,17 +56,22 @@ class _HomeState extends State<Home> {
             ),
             Expanded(
               child: ListView.builder(
-                itemCount: filteredToDos.length,
+                itemCount: users.length,
                 itemBuilder: (context, index) {
-                  listedTodo = filteredToDos[index];
-                  if (listedTodo.length > 20) {
-                    listedTodo = '${listedTodo.substring(0, 20)}...';
-                  }
+                  // listedUser = filteredUsers[index];
+                  // if (listedUser.length > 20) {
+                  //   listedUser = '${listedUser.substring(0, 20)}...';
+                  // }
                   return ListTile(
-                    title: Text(listedTodo),
+                    leading: Image.network(
+                      users[index]['avatar_url'],
+                      height: 50,
+                      width: 50,
+                    ),
+                    title: Text(users[index]['login']),
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                          builder: (_) => Detail(toDo: filteredToDos[index])));
+                          builder: (_) => Detail(toDo: filteredUsers[index])));
                     },
                   );
                 },

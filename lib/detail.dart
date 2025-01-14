@@ -11,9 +11,24 @@ class Detail extends StatelessWidget {
       appBar: AppBar(
         title: Text('詳細画面'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Text(toDo),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.network(
+              "https://avatars.githubusercontent.com/u/1?v=4",
+              height: 100,
+              width: 100,
+            ),
+            const Text(
+              'ユーザ名',
+              style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+            ),
+            const Chip(
+              label: Text('https://api.github.com/users/mojombo'),
+            )
+          ],
+        ),
       ),
     );
   }

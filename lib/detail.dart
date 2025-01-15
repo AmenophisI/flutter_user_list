@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class Detail extends StatelessWidget {
-  const Detail({super.key, required this.toDo});
+  const Detail({super.key, required this.user});
 
-  final String toDo;
+  final dynamic user;
 
   @override
   Widget build(BuildContext context) {

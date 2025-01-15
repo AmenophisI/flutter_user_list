@@ -14,14 +14,15 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   List<dynamic> users = [];
   List<dynamic> filteredUsers = [];
-
-  String listedUser = '';
+  bool isLoading = true;
 
   Future<void> _fetchUsers() async {
     final res = await http.get(Uri.parse("https://api.github.com/users"));
     final List<dynamic> data = jsonDecode(res.body);
     setState(() {
       users = data;
+      filteredUsers = data;
+      isLoading = false;
     });
   }
 
@@ -31,9 +32,12 @@ class _HomeState extends State<Home> {
     _fetchUsers();
   }
 
-  void filterToDos(String condition) {
+  void filterUser(String condition) {
     setState(() {
-      filteredUsers = users.where((todo) => todo.contains(condition)).toList();
+      filteredUsers = users.where((user) {
+        final login = user['login']?.toLowerCase() ?? '';
+        return login.contains(condition.toLowerCase());
+      }).toList();
     });
   }
 
@@ -41,7 +45,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('toDoアプリ'),
+        title: Text('ユーザ一覧'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -52,26 +56,22 @@ class _HomeState extends State<Home> {
                 border: OutlineInputBorder(),
                 hintText: "検索",
               ),
-              onChanged: filterToDos,
+              onChanged: filterUser,
             ),
             Expanded(
               child: ListView.builder(
-                itemCount: users.length,
+                itemCount: filteredUsers.length,
                 itemBuilder: (context, index) {
-                  // listedUser = filteredUsers[index];
-                  // if (listedUser.length > 20) {
-                  //   listedUser = '${listedUser.substring(0, 20)}...';
-                  // }
                   return ListTile(
                     leading: Image.network(
-                      users[index]['avatar_url'],
+                      filteredUsers[index]['avatar_url'],
                       height: 50,
                       width: 50,
                     ),
-                    title: Text(users[index]['login']),
+                    title: Text(filteredUsers[index]['login']),
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                          builder: (_) => Detail(toDo: filteredUsers[index])));
+                          builder: (_) => Detail(user: filteredUsers[index])));
                     },
                   );
                 },

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/link.dart';
 
 class Detail extends StatelessWidget {
   const Detail({super.key, required this.user});
@@ -16,17 +17,20 @@ class Detail extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.network(
-              "https://avatars.githubusercontent.com/u/1?v=4",
+              user['avatar_url'],
               height: 100,
               width: 100,
             ),
-            const Text(
-              'ユーザ名',
+            Text(
+              user['login'],
               style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
             ),
-            const Chip(
-              label: Text('https://api.github.com/users/mojombo'),
-            )
+            Link(
+                uri: Uri.parse(user['html_url']),
+                builder: (context, followLink) {
+                  return TextButton(
+                      onPressed: followLink, child: Text(user['html_url']));
+                })
           ],
         ),
       ),
